@@ -18,13 +18,14 @@
     ·
     <a href="https://scholar.google.com.hk/citations?user=6hTbqDEAAAAJ&hl=zh-CN"><strong>Bin Wang</strong></a>
     <br>
+    <b>Kunbyte AI &nbsp; | &nbsp;  Zhejiang University </b>
+    <br>
     <br>
         <a href=""><img src='https://img.shields.io/badge/arXiv-OmniTry-red' alt='Paper PDF'></a>
-        <a href=""><img src='https://img.shields.io/badge/github-OmniTry-black' alt='Paper PDF'></a>
-        <a href=''><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-yellow'></a>
-        <a href=''><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
+        <a href="https://omnitry.github.io/"><img src='https://img.shields.io/badge/project page-OmniTry-orange'></a>
+        <a href='https://huggingface.co/Kunbyte/OmniTry'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-yellow'></a>
+        <a href='https://huggingface.co/spaces/Kunbyte/OmniTry'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
     <br>
-    <b>Kunbyte AI &nbsp; | &nbsp;  Zhejiang University </b>
   </p>
   
   <table align="center">
@@ -70,7 +71,7 @@ python gradio_demo.py
 ```
 
 ## OmniTry-Bench
-
+Please refer to the [OmniTry-Bench](./omnitry_bench/README.MD).
 
 
 ## Acknowledgements
