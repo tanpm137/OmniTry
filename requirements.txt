@@ -6,3 +6,8 @@ peft==0.13.2
 einops
 omegaconf
 safetensors
+torchmetrics
+lpips
+huggingface_hub
+tqdm
+supervision
