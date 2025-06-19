@@ -8,7 +8,7 @@
     ·
     <a href=""><strong>Hengyuan Cao</strong></a>
     ·
-    <a href="https://scholar.google.com.hk/citations?hl=zh-CN&user=LxiMyjQAAAAJ"><strong>Yiming Chen</strong></a><br>
+    <a href="https://scholar.google.com.hk/citations?hl=zh-CN&user=LxiMyjQAAAAJ"><strong>Yiming Chen</strong></a>
     ·
     <a href=""><strong>Xiaoduan Feng</strong></a>
     ·
@@ -22,9 +22,10 @@
     <br>
     <br>
         <a href=""><img src='https://img.shields.io/badge/arXiv-OmniTry-red' alt='Paper PDF'></a>
-        <a href="https://omnitry.github.io/"><img src='https://img.shields.io/badge/project page-OmniTry-orange'></a>
+        <a href="https://omnitry.github.io/"><img src='https://img.shields.io/badge/project page-OmniTry-green'></a>
         <a href='https://huggingface.co/Kunbyte/OmniTry'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-yellow'></a>
         <a href='https://huggingface.co/spaces/Kunbyte/OmniTry'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
+        <a href='https://huggingface.co/datasets/Kunbyte/OmniTry-Bench'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Benchmark-orange'></a>
     <br>
   </p>
   
@@ -42,11 +43,11 @@
 ## Installation
 
 ### Download Checkpoints
-1. Create the checkpoint directory: `mkdir ckpts`
+1. Create the checkpoint directory: `mkdir checkpoints`
 
-2. Download the [FLUX.1-Fill-dev](https://huggingface.co/black-forest-labs/FLUX.1-Fill-dev) into `ckpts/FLUX.1-Fill-dev`
+2. Download the [FLUX.1-Fill-dev](https://huggingface.co/black-forest-labs/FLUX.1-Fill-dev) into `checkpoints/FLUX.1-Fill-dev`
 
-3. Download the [LoRA of OmniTry]() into `ckpts/omnitry_v1_unified_stage2.safetensors`
+3. Download the [LoRA of OmniTry]() into `checkpoints/omnitry_v1_unified.safetensors`. You can also download the `omnitry_v1_clothes.safetensors` that specifically finetuned on the clothe data only.
 
 ### Environment Prepartion
 Install the environment with `conda`
@@ -70,12 +71,14 @@ For running the gradio demo:
 python gradio_demo.py
 ```
 
+To replace the checkpoint of OmniTry, replace the `lora_path` in `configs/omnitry_v1_unified.yaml`.
+
 ## OmniTry-Bench
 Please refer to the [OmniTry-Bench](./omnitry_bench/README.MD).
 
 
 ## Acknowledgements
-This project is developped on the [diffusers](https://github.com/huggingface/diffusers). We appreciate the contributors to this framework.
+This project is developped on the [diffusers](https://github.com/huggingface/diffusers) and [FLUX](https://github.com/black-forest-labs/flux). We appreciate the contributors for their awesome works.
 
 
 ## Citation

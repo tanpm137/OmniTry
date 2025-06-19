@@ -1,5 +1,5 @@
 model_root: checkpoints/FLUX.1-Fill-dev
-lora_path: checkpoints/omnitry_v1_unified_stage2.safetensors
+lora_path: checkpoints/omnitry_v1_unified.safetensors
 lora_rank: 16
 lora_alpha: 16
 
