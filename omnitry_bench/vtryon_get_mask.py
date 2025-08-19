@@ -14,7 +14,7 @@ from Grounded_Segment_Anything.GroundingDINO.groundingdino.util.inference import
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # GroundingDINO config and checkpoint
-GROUNDING_DINO_CONFIG_PATH = 'Grounded-Segment-Anything/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py'
+GROUNDING_DINO_CONFIG_PATH = 'Grounded_Segment_Anything/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py'
 GROUNDING_DINO_CHECKPOINT_PATH = '../checkpoints/groundingdino_swint_ogc.pth'
 
 # Segment-Anything checkpoint

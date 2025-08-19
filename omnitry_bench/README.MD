@@ -102,6 +102,7 @@ For [Grounding DINO](https://github.com/IDEA-Research/Grounded-Segment-Anything)
 ```
 # clone the code of Grounded-Segment-Anything
 git submodule update --init --recursive
+mv Grounded-Segment-Anything Grounded_Segment_Anything 
 
 # download ckpts
 cd checkpoints/
