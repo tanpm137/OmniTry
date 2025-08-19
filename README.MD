@@ -38,9 +38,11 @@
   </table>
 
 ## News
-* **[2025.XX.XX]** We release the model weights, inference demo and evaluation benchmark of OmniTry.
+* **[2025.08.20]** We release the model weights, inference demo and evaluation benchmark of OmniTry!  🎉🎉🎉
 
-## Installation
+## Get Started
+
+**Noted**: Currently, OmniTry requires at least **28GB** of VRAM for inference under torch.bfloat16. We will continue work to decrease memory requirements.
 
 ### Download Checkpoints
 1. Create the checkpoint directory: `mkdir checkpoints`
@@ -60,21 +62,21 @@ or `pip`:
 pip install -r requirements.txt
 ```
 
-(Optional) We highly recommend to install the [flash-attention](https://github.com/Dao-AILab/flash-attention/tree/main) to accelerate the inference process:
+(Optional) We recommend to install the [flash-attention](https://github.com/Dao-AILab/flash-attention/tree/main) to accelerate the inference process:
 ```bash
 pip install flash-attn==2.6.3
 ```
 
-## Usage
+### Usage
 For running the gradio demo:
 ```bash
 python gradio_demo.py
 ```
 
-To replace the checkpoint of OmniTry, replace the `lora_path` in `configs/omnitry_v1_unified.yaml`.
+To change different versions of checkpoints for OmniTry, replace the `lora_path` in `configs/omnitry_v1_unified.yaml`.
 
 ## OmniTry-Bench
-Please refer to the [OmniTry-Bench](./omnitry_bench/README.MD).
+We present a unified evaluation benchmark for OmniTry. Please refer to the [OmniTry-Bench](./omnitry_bench/README.MD).
 
 
 ## Acknowledgements

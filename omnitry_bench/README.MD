@@ -117,6 +117,11 @@ cd checkpoints/
 weget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
 ```
 
+Install the required packages:
+```
+pip install pytorch_fid, lpips, torchmetrics
+```
+
 
 ### Prepare Try-On Results
 Download the benchmark files from [OmniTry-Bench](https://huggingface.co/datasets/kunbyte/OmniTry-Bench). Then run your own model based on `omni_vtryon_bench_small_v1.json`, and prepare the result files in format of `[class_name]_[person_ID]_[object_ID].jpg`. For examples: `bag_backpack_man_001_101.jpg`.

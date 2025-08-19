@@ -22,19 +22,14 @@ device = torch.device('cuda:0')
 weight_dtype = torch.bfloat16
 args = OmegaConf.load('configs/omnitry_v1_unified.yaml')
 
-# init model
-transformer = FluxTransformer2DModel.from_pretrained(
-    f'{args.model_root}/transformer').requires_grad_(False).to(device, dtype=weight_dtype)
-vae = diffusers.AutoencoderKL.from_pretrained(
-    f'{args.model_root}/vae').requires_grad_(False).to(device, dtype=weight_dtype)
-text_encoder = transformers.CLIPTextModel.from_pretrained(
-    f'{args.model_root}/text_encoder').requires_grad_(False).to(device, dtype=weight_dtype)
-text_encoder_2 = transformers.T5EncoderModel.from_pretrained(
-    f'{args.model_root}/text_encoder_2').requires_grad_(False).to(device, dtype=weight_dtype)
+# init model & pipeline
+transformer = FluxTransformer2DModel.from_pretrained(f'{args.model_root}/transformer').requires_grad_(False).to(dtype=weight_dtype)
+pipeline = FluxFillPipeline.from_pretrained(args.model_root, transformer=transformer.eval(), torch_dtype=weight_dtype)
 
-scheduler = diffusers.FlowMatchEulerDiscreteScheduler.from_pretrained(f'{args.model_root}/scheduler')
-tokenizer = transformers.CLIPTokenizer.from_pretrained(f'{args.model_root}/tokenizer')
-tokenizer_2 = transformers.T5TokenizerFast.from_pretrained(f'{args.model_root}/tokenizer_2')
+# VRAM saving, comment the follwing lines if you have sufficient memory
+pipeline.enable_model_cpu_offload()
+pipeline.vae.enable_tiling()
+
 
 # insert LoRA
 lora_config = LoraConfig(
@@ -56,43 +51,32 @@ with safe_open(args.lora_path, framework="pt") as f:
     lora_weights = {k: f.get_tensor(k) for k in f.keys()}
     transformer.load_state_dict(lora_weights, strict=False)
 
-# hack lora forward
-def create_hacked_forward(module):
+# # hack lora forward
+# def create_hacked_forward(module):
 
-    def lora_forward(self, active_adapter, x, *args, **kwargs):
-        result = self.base_layer(x, *args, **kwargs)
-        if active_adapter is not None:
-            torch_result_dtype = result.dtype
-            lora_A = self.lora_A[active_adapter]
-            lora_B = self.lora_B[active_adapter]
-            dropout = self.lora_dropout[active_adapter]
-            scaling = self.scaling[active_adapter]
-            x = x.to(lora_A.weight.dtype)
-            result = result + lora_B(lora_A(dropout(x))) * scaling
-        return result
+#     def lora_forward(self, active_adapter, x, *args, **kwargs):
+#         result = self.base_layer(x, *args, **kwargs)
+#         if active_adapter is not None:
+#             torch_result_dtype = result.dtype
+#             lora_A = self.lora_A[active_adapter]
+#             lora_B = self.lora_B[active_adapter]
+#             dropout = self.lora_dropout[active_adapter]
+#             scaling = self.scaling[active_adapter]
+#             x = x.to(lora_A.weight.dtype)
+#             result = result + lora_B(lora_A(dropout(x))) * scaling
+#         return result
     
-    def hacked_lora_forward(self, x, *args, **kwargs):
-        return torch.cat((
-            lora_forward(self, 'vtryon_lora', x[:1], *args, **kwargs),
-            lora_forward(self, 'garment_lora', x[1:], *args, **kwargs),
-        ), dim=0)
+#     def hacked_lora_forward(self, x, *args, **kwargs):
+#         return torch.cat((
+#             lora_forward(self, 'vtryon_lora', x[:1], *args, **kwargs),
+#             lora_forward(self, 'garment_lora', x[1:], *args, **kwargs),
+#         ), dim=0)
     
-    return hacked_lora_forward.__get__(module, type(module))
+#     return hacked_lora_forward.__get__(module, type(module))
 
-for n, m in transformer.named_modules():
-    if isinstance(m, peft.tuners.lora.layer.Linear):
-        m.forward = create_hacked_forward(m)
-
-# init pipeline
-pipeline = FluxFillPipeline(
-    transformer=transformer.eval(), 
-    scheduler=copy.deepcopy(scheduler),
-    vae=vae,
-    text_encoder=text_encoder,
-    text_encoder_2=text_encoder_2,
-    tokenizer=tokenizer,
-    tokenizer_2=tokenizer_2,
-)
+# for n, m in transformer.named_modules():
+#     if isinstance(m, peft.tuners.lora.layer.Linear):
+#         m.forward = create_hacked_forward(m)
 
 
 def seed_everything(seed=0):
@@ -104,7 +88,7 @@ def seed_everything(seed=0):
     torch.cuda.manual_seed_all(seed)
 
 
-def generate(person_image, object_image, object_class, steps, guidance_scale, seed):
+def generate(person_image, object_image, object_class, steps=20, guidance_scale=30, seed=-1, progress=gr.Progress(track_tqdm=True)):
     # set seed
     if seed == -1:
         seed = random.randint(0, 2**32 - 1)
@@ -177,6 +161,90 @@ if __name__ == '__main__':
             guidance_scale = gr.Slider(label="Guidance scale", minimum=1, maximum=50, value=30, step=0.1)
             steps = gr.Slider(label="Steps", minimum=1, maximum=50, value=20, step=1)
             seed = gr.Number(label="Seed", value=-1, precision=0)
+
+        with gr.Row():
+            gr.Examples(
+                examples=[
+                    [
+                        './demo_example/person_top_cloth.jpg',
+                        './demo_example/object_top_cloth.jpg', 
+                        'top clothes',
+                    ],
+                    [
+                        './demo_example/person_bottom_cloth.jpg',
+                        './demo_example/object_bottom_cloth.jpg', 
+                        'bottom clothes',
+                    ],
+                    [
+                        './demo_example/person_dress.jpg',
+                        './demo_example/object_dress.jpg', 
+                        'dress',
+                    ],
+                    [
+                        './demo_example/person_shoes.jpg',
+                        './demo_example/object_shoes.jpg', 
+                        'shoe',
+                    ],
+                    [
+                        './demo_example/person_earrings.jpg',
+                        './demo_example/object_earrings.jpg', 
+                        'earrings',
+                    ],
+                    [
+                        './demo_example/person_bracelet.jpg',
+                        './demo_example/object_bracelet.jpg', 
+                        'bracelet',
+                    ],
+                    [
+                        './demo_example/person_necklace.jpg',
+                        './demo_example/object_necklace.jpg', 
+                        'necklace',
+                    ],
+                    [
+                        './demo_example/person_ring.jpg',
+                        './demo_example/object_ring.jpg', 
+                        'ring',
+                    ],
+                    [
+                        './demo_example/person_sunglasses.jpg',
+                        './demo_example/object_sunglasses.jpg', 
+                        'sunglasses',
+                    ],
+                    [
+                        './demo_example/person_glasses.jpg',
+                        './demo_example/object_glasses.jpg', 
+                        'glasses',
+                    ],
+                    [
+                        './demo_example/person_belt.jpg',
+                        './demo_example/object_belt.jpg', 
+                        'belt',
+                    ],
+                    [
+                        './demo_example/person_bag.jpg',
+                        './demo_example/object_bag.jpg', 
+                        'bag',
+                    ],
+                    [
+                        './demo_example/person_hat.jpg',
+                        './demo_example/object_hat.jpg', 
+                        'hat',
+                    ],
+                    [
+                        './demo_example/person_tie.jpg',
+                        './demo_example/object_tie.jpg', 
+                        'tie',
+                    ],
+                    [
+                        './demo_example/person_bowtie.jpg',
+                        './demo_example/object_bowtie.jpg', 
+                        'bow tie',
+                    ],
+                ],
+
+                inputs=[person_image, object_image, object_class],
+                examples_per_page=100
+            )
 
         run_button.click(generate, inputs=[person_image, object_image, object_class, steps, guidance_scale, seed], outputs=[image_out])
     
