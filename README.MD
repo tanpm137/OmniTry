@@ -21,7 +21,7 @@
     <b>Kunbyte AI &nbsp; | &nbsp;  Zhejiang University </b>
     <br>
     <br>
-        <a href=""><img src='https://img.shields.io/badge/arXiv-OmniTry-red' alt='Paper PDF'></a>
+        <a href="http://arxiv.org/abs/2508.13632"><img src='https://img.shields.io/badge/arXiv-OmniTry-red' alt='Paper PDF'></a>
         <a href="https://omnitry.github.io/"><img src='https://img.shields.io/badge/project page-OmniTry-green'></a>
         <a href='https://huggingface.co/Kunbyte/OmniTry'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-yellow'></a>
         <a href='https://huggingface.co/spaces/Kunbyte/OmniTry'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
@@ -38,7 +38,7 @@
   </table>
 
 ## News
-* **[2025.08.20]** We release the model weights, inference demo and evaluation benchmark of OmniTry!  🎉🎉🎉
+* **[2025.08.20]** 🎉🎉🎉 We release the model weights, inference demo and evaluation benchmark of OmniTry! To experience our advanced version and other related features, please visit our product website [k-fashionshop](https://marketing.k-fashionshop.com/home) (in Chinese) or [visboom](https://www.visboom.com/) (in English).
 
 ## Get Started
 
@@ -89,7 +89,7 @@ If you find this codebase useful for your research, please use the following ent
 @article{feng2025omnitry,
   title={OmniTry: Virtual Try-On Anything without Masks},
   author={Feng, Yutong and Zhang, Linlin and Cao, Hengyuan and Chen, Yiming and Feng, Xiaoduan and Cao, Jian and Wu, Yuxiong and Wang, Bin},
-  journal={arXiv preprint arXiv:XXXXXXX},
+  journal={arXiv preprint arXiv:2508.13632},
   year={2025}
 }
 ```
