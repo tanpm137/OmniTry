@@ -49,7 +49,7 @@
 
 2. Download the [FLUX.1-Fill-dev](https://huggingface.co/black-forest-labs/FLUX.1-Fill-dev) into `checkpoints/FLUX.1-Fill-dev`
 
-3. Download the [LoRA of OmniTry]() into `checkpoints/omnitry_v1_unified.safetensors`. You can also download the `omnitry_v1_clothes.safetensors` that specifically finetuned on the clothe data only.
+3. Download the [LoRA of OmniTry](https://huggingface.co/Kunbyte/OmniTry) into `checkpoints/omnitry_v1_unified.safetensors`. You can also download the `omnitry_v1_clothes.safetensors` that specifically finetuned on the clothe data only.
 
 ### Environment Prepartion
 Install the environment with `conda`
