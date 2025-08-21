@@ -51,32 +51,32 @@ with safe_open(args.lora_path, framework="pt") as f:
     lora_weights = {k: f.get_tensor(k) for k in f.keys()}
     transformer.load_state_dict(lora_weights, strict=False)
 
-# # hack lora forward
-# def create_hacked_forward(module):
+# hack lora forward
+def create_hacked_forward(module):
 
-#     def lora_forward(self, active_adapter, x, *args, **kwargs):
-#         result = self.base_layer(x, *args, **kwargs)
-#         if active_adapter is not None:
-#             torch_result_dtype = result.dtype
-#             lora_A = self.lora_A[active_adapter]
-#             lora_B = self.lora_B[active_adapter]
-#             dropout = self.lora_dropout[active_adapter]
-#             scaling = self.scaling[active_adapter]
-#             x = x.to(lora_A.weight.dtype)
-#             result = result + lora_B(lora_A(dropout(x))) * scaling
-#         return result
+    def lora_forward(self, active_adapter, x, *args, **kwargs):
+        result = self.base_layer(x, *args, **kwargs)
+        if active_adapter is not None:
+            torch_result_dtype = result.dtype
+            lora_A = self.lora_A[active_adapter]
+            lora_B = self.lora_B[active_adapter]
+            dropout = self.lora_dropout[active_adapter]
+            scaling = self.scaling[active_adapter]
+            x = x.to(lora_A.weight.dtype)
+            result = result + lora_B(lora_A(dropout(x))) * scaling
+        return result
     
-#     def hacked_lora_forward(self, x, *args, **kwargs):
-#         return torch.cat((
-#             lora_forward(self, 'vtryon_lora', x[:1], *args, **kwargs),
-#             lora_forward(self, 'garment_lora', x[1:], *args, **kwargs),
-#         ), dim=0)
+    def hacked_lora_forward(self, x, *args, **kwargs):
+        return torch.cat((
+            lora_forward(self, 'vtryon_lora', x[:1], *args, **kwargs),
+            lora_forward(self, 'garment_lora', x[1:], *args, **kwargs),
+        ), dim=0)
     
-#     return hacked_lora_forward.__get__(module, type(module))
+    return hacked_lora_forward.__get__(module, type(module))
 
-# for n, m in transformer.named_modules():
-#     if isinstance(m, peft.tuners.lora.layer.Linear):
-#         m.forward = create_hacked_forward(m)
+for n, m in transformer.named_modules():
+    if isinstance(m, peft.tuners.lora.layer.Linear):
+        m.forward = create_hacked_forward(m)
 
 
 def seed_everything(seed=0):
