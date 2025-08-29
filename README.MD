@@ -39,6 +39,7 @@
 
 ## News
 * **[2025.08.20]** 🎉🎉🎉 We release the model weights, inference demo and evaluation benchmark of OmniTry! To experience our advanced version and other related features, please visit our product website [k-fashionshop](https://marketing.k-fashionshop.com/home) (in Chinese) or [visboom](https://www.visboom.com/) (in English).
+* **[2025.08.29]** We release the data pre-processing scripts for OmniTry! Now you can process your own dataset with [data_preprocess](./data_preprocess/README.MD)
 
 ## Get Started
 
