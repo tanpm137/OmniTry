@@ -18,7 +18,7 @@ from omnitry.models.transformer_flux import FluxTransformer2DModel
 from omnitry.pipelines.pipeline_flux_fill import FluxFillPipeline
 
 
-device = torch.device('cuda:6')
+device = torch.device('cuda:0')
 weight_dtype = torch.bfloat16
 args = OmegaConf.load('configs/omnitry_v1_unified.yaml')
 model_root = args.model_root
@@ -29,6 +29,8 @@ images_path = os.path.join(data_set_path, "growth_truth")
 garments_path = os.path.join(data_set_path, "test_garments")
 result_path = args.result_path
 seed = args.seed
+image_width = 768
+image_height = 1024
 
 if not os.path.exists(model_root):
     raise ValueError("Model root not exists!")
@@ -169,7 +171,7 @@ if __name__ == '__main__':
                 
                 print(f"\nProcessing person image: {row[0]} | garment image: {row[1]} | class: {object_type}")
                 
-                person_image = Image.open(image_path)
+                person_image = Image.open(image_path).resize((image_width, image_height)).convert('RGB')
                 garment_image = Image.open(garment_path)
                 
                 result_image = generate(person_image, garment_image, object_type, steps=30, guidance_scale=30, seed=seed)
