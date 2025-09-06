@@ -1,4 +1,3 @@
-import gradio as gr
 import torch
 import diffusers
 import transformers
@@ -11,8 +10,9 @@ import peft
 from peft import LoraConfig
 from safetensors import safe_open
 from omegaconf import OmegaConf
+from PIL import Image
 import os
-os.environ["GRADIO_TEMP_DIR"] = ".gradio"
+import csv
 
 from omnitry.models.transformer_flux import FluxTransformer2DModel
 from omnitry.pipelines.pipeline_flux_fill import FluxFillPipeline
@@ -21,6 +21,17 @@ from omnitry.pipelines.pipeline_flux_fill import FluxFillPipeline
 device = torch.device('cuda:0')
 weight_dtype = torch.bfloat16
 args = OmegaConf.load('configs/omnitry_v1_unified.yaml')
+model_root = args.model_root
+data_set_path = args.data_set_path
+
+test_pair_path = os.path.join(data_set_path, "test_pair.csv")
+images_path = os.path.join(data_set_path, "growth_truth")
+garments_path = os.path.join(data_set_path, "test_garments")
+result_path = args.result_path
+seed = args.seed
+
+if not os.path.exists(model_root):
+    raise ValueError("Model root not exists!")
 
 # init model & pipeline
 transformer = FluxTransformer2DModel.from_pretrained(f'{args.model_root}/transformer').requires_grad_(False).to(dtype=weight_dtype)
@@ -88,7 +99,7 @@ def seed_everything(seed=0):
     torch.cuda.manual_seed_all(seed)
 
 
-def generate(person_image, object_image, object_class, steps=20, guidance_scale=30, seed=-1, progress=gr.Progress(track_tqdm=True)):
+def generate(person_image, object_image, object_class, steps=20, guidance_scale=30, seed=-1):
     # set seed
     if seed == -1:
         seed = random.randint(0, 2**32 - 1)
@@ -140,112 +151,36 @@ def generate(person_image, object_image, object_class, steps=20, guidance_scale=
 
     return img
 
-
 if __name__ == '__main__':
-
-    with gr.Blocks() as demo:
-        gr.Markdown('# Demo of OmniTry')
-        with gr.Row():
-            with gr.Column():
-                person_image = gr.Image(type="pil", label="Person Image", height=800)
-                run_button = gr.Button(value="Submit", variant='primary')
-
-            with gr.Column():
-                object_image = gr.Image(type="pil", label="Object Image", height=800)
-                object_class = gr.Dropdown(label='Object Class', choices=args.object_map.keys())
-
-            with gr.Column():
-                image_out = gr.Image(type="pil", label="Output", height=800)
-
-        with gr.Accordion("Advanced ⚙️", open=False):
-            guidance_scale = gr.Slider(label="Guidance scale", minimum=1, maximum=50, value=30, step=0.1)
-            steps = gr.Slider(label="Steps", minimum=1, maximum=50, value=20, step=1)
-            seed = gr.Number(label="Seed", value=-1, precision=0)
-
-        with gr.Row():
-            gr.Examples(
-                examples=[
-                    [
-                        './demo_example/person_top_cloth.jpg',
-                        './demo_example/object_top_cloth.jpg', 
-                        'top clothes',
-                    ],
-                    [
-                        './demo_example/person_bottom_cloth.jpg',
-                        './demo_example/object_bottom_cloth.jpg', 
-                        'bottom clothes',
-                    ],
-                    [
-                        './demo_example/person_dress.jpg',
-                        './demo_example/object_dress.jpg', 
-                        'dress',
-                    ],
-                    [
-                        './demo_example/person_shoes.jpg',
-                        './demo_example/object_shoes.jpg', 
-                        'shoe',
-                    ],
-                    [
-                        './demo_example/person_earrings.jpg',
-                        './demo_example/object_earrings.jpg', 
-                        'earrings',
-                    ],
-                    [
-                        './demo_example/person_bracelet.jpg',
-                        './demo_example/object_bracelet.jpg', 
-                        'bracelet',
-                    ],
-                    [
-                        './demo_example/person_necklace.jpg',
-                        './demo_example/object_necklace.jpg', 
-                        'necklace',
-                    ],
-                    [
-                        './demo_example/person_ring.jpg',
-                        './demo_example/object_ring.jpg', 
-                        'ring',
-                    ],
-                    [
-                        './demo_example/person_sunglasses.jpg',
-                        './demo_example/object_sunglasses.jpg', 
-                        'sunglasses',
-                    ],
-                    [
-                        './demo_example/person_glasses.jpg',
-                        './demo_example/object_glasses.jpg', 
-                        'glasses',
-                    ],
-                    [
-                        './demo_example/person_belt.jpg',
-                        './demo_example/object_belt.jpg', 
-                        'belt',
-                    ],
-                    [
-                        './demo_example/person_bag.jpg',
-                        './demo_example/object_bag.jpg', 
-                        'bag',
-                    ],
-                    [
-                        './demo_example/person_hat.jpg',
-                        './demo_example/object_hat.jpg', 
-                        'hat',
-                    ],
-                    [
-                        './demo_example/person_tie.jpg',
-                        './demo_example/object_tie.jpg', 
-                        'tie',
-                    ],
-                    [
-                        './demo_example/person_bowtie.jpg',
-                        './demo_example/object_bowtie.jpg', 
-                        'bow tie',
-                    ],
-                ],
-
-                inputs=[person_image, object_image, object_class],
-                examples_per_page=100
-            )
-
-        run_button.click(generate, inputs=[person_image, object_image, object_class, steps, guidance_scale, seed], outputs=[image_out])
     
-    demo.launch()
+    if not os.path.exists(result_path):
+        os.makedirs(result_path)
+    
+    print(f"Result save at {result_path}")
+    try:
+        with open(test_pair_path, mode='r', newline='', encoding='utf-8') as file:
+            csv_reader = csv.reader(file)
+            
+            _ = next(csv_reader)
+            for row in csv_reader:
+                image_path = os.path.join(images_path, row[0])
+                garment_path = os.path.join(garments_path, row[1])
+                object_type = "top clothes" if row[3] == "upper" else "dress"
+                
+                print(f"\nProcessing person image: {row[0]} | garment image: {row[1]} | class: {object_type}")
+                
+                person_image = Image.open(image_path)
+                garment_image = Image.open(garment_path)
+                
+                result_image = generate(person_image, garment_image, object_type, steps=30, guidance_scale=30, seed=seed)
+                
+                result_image_name = os.path.splitext(row[0])[0] + ".jpg"
+                result_image_path = os.path.join(result_path, result_image_name)
+                result_image.save(result_image_path)
+                
+                print(f"\nProcess completed, file saved in {result_image_path}")
+                
+    except FileNotFoundError:
+        print(f"Error: The file at {test_pair_path} was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")

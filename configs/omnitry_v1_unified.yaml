@@ -1,24 +1,28 @@
-model_root: checkpoints/FLUX.1-Fill-dev
-lora_path: checkpoints/omnitry_v1_unified.safetensors
+model_root: /raid/ltnghia01/tanpm/FLUX.1-Fill-dev
+lora_path: /raid/ltnghia01/tanpm/OmniTry/checkpoints/OmniTry/omnitry_v1_clothes.safetensors
 lora_rank: 16
 lora_alpha: 16
+data_set_path: /raid/ltnghia01/tanpm/dataset_test
+result_path: /raid/ltnghia01/tanpm/OmniTry/results
+seed: 42
 
-object_map: {
-  'top clothes': 'replacing the top cloth',
-  'bottom clothes': 'replacing the bottom cloth',
-  'dress': 'replacing the dress',
-  'shoe': 'replacing the shoe',
+object_map:
+  {
+    "top clothes": "replacing the top cloth",
+    "bottom clothes": "replacing the bottom cloth",
+    "dress": "replacing the dress",
+    "shoe": "replacing the shoe",
 
-  'earrings': 'trying on earrings',
-  'bracelet': 'trying on bracelet',
-  'necklace': 'trying on necklace',
-  'ring': 'trying on ring',
+    "earrings": "trying on earrings",
+    "bracelet": "trying on bracelet",
+    "necklace": "trying on necklace",
+    "ring": "trying on ring",
 
-  'sunglasses': 'trying on sunglasses',
-  'glasses': 'trying on glasses',
-  'belt': 'trying on belt',
-  'bag': 'trying on bag',
-  'hat': 'trying on hat',
-  'tie': 'trying on tie',
-  'bow tie': 'trying on bow tie',
-}
+    "sunglasses": "trying on sunglasses",
+    "glasses": "trying on glasses",
+    "belt": "trying on belt",
+    "bag": "trying on bag",
+    "hat": "trying on hat",
+    "tie": "trying on tie",
+    "bow tie": "trying on bow tie",
+  }
