@@ -18,7 +18,7 @@ from omnitry.models.transformer_flux import FluxTransformer2DModel
 from omnitry.pipelines.pipeline_flux_fill import FluxFillPipeline
 
 
-device = torch.device('cuda:6')
+device = torch.device('cuda:0')
 weight_dtype = torch.bfloat16
 args = OmegaConf.load('configs/omnitry_v1_unified.yaml')
 model_root = args.model_root
