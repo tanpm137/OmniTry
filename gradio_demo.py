@@ -172,7 +172,7 @@ if __name__ == '__main__':
                 print(f"\nProcessing person image: {row[0]} | garment image: {row[1]} | class: {object_type}")
                 
                 person_image = Image.open(image_path).resize((image_width, image_height)).convert('RGB')
-                garment_image = Image.open(garment_path)
+                garment_image = Image.open(garment_path).convert('RGB')
                 
                 result_image = generate(person_image, garment_image, object_type, steps=30, guidance_scale=30, seed=seed)
                 
